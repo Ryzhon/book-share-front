@@ -11,7 +11,7 @@ const Header = () => {
               </Typography>
             </Link>
             <Box sx={{ flexGrow: 1 }} />
-            <Link href="/add-book" passHref>
+            <Link href="/books/add" passHref>
               <Button color="inherit">本を追加</Button>
             </Link>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>

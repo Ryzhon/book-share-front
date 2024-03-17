@@ -1,41 +1,97 @@
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { Container, Grid, Typography, Paper, Box } from '@mui/material';
+import { Container, Grid, Typography, Paper, Box, Button } from '@mui/material';
+import { Book } from '@/types/book';
 import Image from 'next/image';
+import BookEditForm from '@/components/BookEditForm';
+import FlashMessage from '@/components/FlashMessage';
+import { FlashMessageType } from '@/types/flashMessageType';
 
 const BookDetail = () => {
   const router = useRouter();
   const { id } = router.query;
 
-  // 仮の本のデータ
-  const book = {
-    title: 'サンプル本のタイトル',
-    author: 'サンプル著者',
-    summary: 'ここに本の説明文が入ります。ここに本の説明文が入ります。ここに本の説明文が入ります。',
-    imageUrl: 'http://books.google.com/books/content?id=Bdh_RQAACAAJ&printsec=frontcover&img=1&zoom=1&source=gbs_api',
+  const [book, setBook] = useState<Book | null>(null);
+  const [editMode, setEditMode] = useState(false);
+  const [flash, setFlash] = useState<FlashMessageType>({ message: '', type: 'success' });
+
+  useEffect(() => {
+    const fetchBook = async () => {
+      const response = await fetch(`http://localhost:5000/books/${id}`);
+      const data = await response.json();
+      setBook(data);
+    };
+    if (id) {
+      fetchBook();
+    }
+  }, [id]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!book) return;
+    const { name, value } = e.target;
+    setBook({ ...book, [name]: value });
+  };
+
+  const handleSubmit = async (e:  React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const response = await fetch(`http://localhost:5000/books/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(book),
+    });
+    if (response.ok) {
+      const updatedBook = await response.json();
+      setBook(updatedBook);
+      setEditMode(false);
+      setFlash({ message: '更新が成功しました。', type: 'success' });
+    } else {
+      setFlash({ message: '更新に失敗しました。', type: 'error' });
+    }
+  };
+
+
+  const handleEditClick = () => {
+    setEditMode(true);
   };
 
   return (
-    <Container sx={{ mt: 4 }}> {/* コンテナーの上部にマージンを追加 */}
-      <Grid container spacing={4}>
-        <Grid item xs={12} md={6}>
-          <Box sx={{ width: '80%', height: '80%', position: 'relative', mx: 'auto' }}> {/* 画像のサイズと中央配置を設定 */}
-            <Image src={book.imageUrl} alt={book.title} layout="responsive" width={200} height={200} objectFit="contain" />
-          </Box>
+    <Container sx={{ mt: 4 }}>
+      {flash.message && <FlashMessage message={flash.message} type={flash.type} />}
+      {book && (
+        <Grid container spacing={4}>
+          <Grid item xs={12} md={6}>
+            <Box sx={{ width: '80%', height: '80%', position: 'relative', mx: 'auto' }}>
+              {book.image_url && (
+                <Image src={book.image_url} alt={book.title} layout="responsive" width={200} height={200} objectFit="contain" />
+              )}
+            </Box>
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <Paper elevation={3} sx={{ padding: '20px' }}>
+              {editMode ? (
+                <BookEditForm book={book} onChange={handleChange} onSubmit={handleSubmit} />
+              ) : (
+                <>
+                  <Typography variant="h5" component="h2" sx={{ marginBottom: '20px' }}>
+                    {book.title}
+                  </Typography>
+                  <Typography variant="subtitle1" sx={{ marginBottom: '20px' }}>
+                    著者: {book.author}
+                  </Typography>
+                  <Typography variant="body1">
+                    {book.summary}
+                  </Typography>
+                  <Button variant="outlined" onClick={handleEditClick} type="button">
+                    編集
+                  </Button>
+                </>
+              )}
+            </Paper>
+          </Grid>
         </Grid>
-        <Grid item xs={12} md={6}>
-          <Paper elevation={3} sx={{ padding: '20px' }}>
-            <Typography variant="h5" component="h2" sx={{ marginBottom: '20px' }}>
-              {book.title}
-            </Typography>
-            <Typography variant="subtitle1" sx={{ marginBottom: '20px' }}>
-              著者: {book.author}
-            </Typography>
-            <Typography variant="body1">
-              {book.summary}
-            </Typography>
-          </Paper>
-        </Grid>
-      </Grid>
+      )}
     </Container>
   );
 };

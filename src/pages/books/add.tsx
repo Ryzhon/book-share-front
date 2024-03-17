@@ -8,42 +8,43 @@ const AddBook = () => {
     genre_id: '',
     summary: '',
     status: '',
+    image_url: '',
     isbn: '',
   });
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault(); // フォーム送信時のデフォルトのページ再読み込みを防止
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     try {
-      const response = await fetch('http://localhost:5000/books', { // APIエンドポイント
+      const response = await fetch('http://localhost:5000/books', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData), // フォームデータをJSON形式で送信
+        body: JSON.stringify(formData),
       });
       if (!response.ok) {
         throw new Error('Something went wrong');
       }
-      const result = await response.json(); // レスポンスのJSONを解析
-      console.log(result); // 結果をコンソールに表示
-      alert('本が正常に追加されました'); // ユーザーへのフィードバック
-      // 成功後、フォームをリセット
+      const result = await response.json();
+      console.log(result);
+      alert('本が正常に追加されました');
       setFormData({
         title: '',
         author: '',
         genre_id: '',
         summary: '',
         status: '',
+        image_url: '',
         isbn: '',
       });
     } catch (error) {
       console.error('Failed to add book:', error);
-      alert('本の追加に失敗しました'); // ユーザーへのエラーフィードバック
+      alert('本の追加に失敗しました');
     }
   };
 
@@ -59,6 +60,7 @@ const AddBook = () => {
           <TextField label="ジャンルID" name="genre_id" type="number" variant="outlined" value={formData.genre_id} onChange={handleChange} />
           <TextField label="概要" name="summary" variant="outlined" multiline rows={4} value={formData.summary} onChange={handleChange} />
           <TextField label="状態" name="status" variant="outlined" value={formData.status} onChange={handleChange} />
+          <TextField label="画像リンク" name="image_url" variant="outlined" value={formData.image_url} onChange={handleChange} />
           <TextField label="ISBN" name="isbn" variant="outlined" value={formData.isbn} onChange={handleChange} />
           <Button type="submit" variant="contained" sx={{ mt: 3 }}>
             送信
