@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import Link from "next/link";
+import Image from "next/image";
 import {
   Container,
   Grid,
@@ -8,12 +10,10 @@ import {
   Box,
   Chip,
 } from "@mui/material";
-import TagSelect from "@/components/TagSelect";
-import GenreSelect from "@/components/GenreSelect";
-import SearchBox from "@/components/SearchBox";
-import Link from "next/link";
-import Image from "next/image";
-import { Book } from "@/types/book";
+
+import SearchAndFilter from "@/components/SerchAndFilter";
+
+import { Book } from "@/types/Book";
 
 const BooksPage = () => {
   const [books, setBooks] = useState<Book[]>([]);
@@ -45,31 +45,14 @@ const BooksPage = () => {
 
   return (
     <Container maxWidth="lg">
-      <SearchBox
+      <SearchAndFilter
         searchTerm={searchTerm}
-        onChange={(newSearchTerm: string) => setSearchTerm(newSearchTerm)}
+        setSearchTerm={setSearchTerm}
+        selectedGenre={selectedGenre}
+        setSelectedGenre={setSelectedGenre}
+        selectedTags={selectedTags}
+        setSelectedTags={setSelectedTags}
       />
-      <Typography variant="subtitle1" sx={{ mb: 2 }}>
-        絞り込む
-      </Typography>
-      <Box sx={{ mb: 3 }}>
-        <Typography variant="subtitle1" sx={{ mb: 2 }}>
-          ジャンル
-        </Typography>
-        <GenreSelect
-          selectedGenre={selectedGenre}
-          setSelectedGenre={setSelectedGenre}
-        />
-      </Box>
-      <Box sx={{ mb: 3 }}>
-        <Typography variant="subtitle1" sx={{ mb: 2 }}>
-          タグ
-        </Typography>
-        <TagSelect
-          selectedTags={selectedTags}
-          setSelectedTags={setSelectedTags}
-        />
-      </Box>
       <Grid container spacing={3}>
         {filteredBooks.map((book) => (
           <Grid item key={book.id} xs={12} sm={6} md={3} lg={3} xl={2}>

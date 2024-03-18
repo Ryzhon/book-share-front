@@ -1,11 +1,6 @@
 import { useState, useEffect } from "react";
 import { Box, Chip } from "@mui/material";
-import { Tag } from "@/types/book";
-
-type TagSelectProps = {
-  selectedTags: number[];
-  setSelectedTags: (value: number[]) => void;
-};
+import { Tag, TagSelectProps } from "@/types/Tag";
 
 const TagSelect: React.FC<TagSelectProps> = ({
   selectedTags,

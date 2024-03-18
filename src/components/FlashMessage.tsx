@@ -1,6 +1,6 @@
 import React from "react";
 import { Alert, Box } from "@mui/material";
-import { FlashMessageType } from "@/types/flashMessageType";
+import { FlashMessageType } from "@/types/FlashMessage";
 
 const FlashMessage: React.FC<FlashMessageType> = ({ message, type }) => {
   if (!message) return null;

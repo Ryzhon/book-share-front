@@ -1,11 +1,7 @@
-export type Tag = {
-  id: number;
-  name: string;
-};
-export type Genre = {
-  id: number;
-  name: string;
-};
+import React from "react";
+import { Genre } from "./Genre";
+import { Tag } from "./Tag";
+
 export type Book = {
   id: number;
   title: string;
@@ -17,4 +13,11 @@ export type Book = {
   image_url: string;
   genre: Genre;
   tags: Tag[];
+};
+
+export type EditBookFormProps = {
+  book: Book;
+  onChange: React.ChangeEventHandler<HTMLInputElement>;
+  onSubmit: React.FormEventHandler<HTMLFormElement>;
+  onCancel: () => void;
 };

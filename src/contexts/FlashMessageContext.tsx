@@ -1,11 +1,10 @@
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import React, { createContext, useContext, useState } from "react";
 import { Alert, Box } from "@mui/material";
-import { FlashMessageType } from "@/types/flashMessageType";
-
-interface FlashMessageContextType {
-  flash: FlashMessageType;
-  setFlash: (message: FlashMessageType) => void;
-}
+import {
+  FlashMessageType,
+  FlashMessageContextType,
+  FlashMessageProviderProps,
+} from "@/types/FlashMessage";
 
 const defaultState: FlashMessageContextType = {
   flash: { message: "", type: "info" },
@@ -16,10 +15,6 @@ const FlashMessageContext =
   createContext<FlashMessageContextType>(defaultState);
 
 export const useFlashMessageContext = () => useContext(FlashMessageContext);
-
-interface FlashMessageProviderProps {
-  children: ReactNode;
-}
 
 export const FlashMessageProvider: React.FC<FlashMessageProviderProps> = ({
   children,

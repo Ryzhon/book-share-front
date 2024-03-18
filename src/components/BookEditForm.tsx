@@ -1,17 +1,12 @@
 import React from "react";
 import { TextField, Button, Box } from "@mui/material";
-import { Book } from "@/types/book";
+import { EditBookFormProps } from "@/types/Book";
 
-const BookEditForm = ({
+const BookEditForm: React.FC<EditBookFormProps> = ({
   book,
   onChange,
   onSubmit,
   onCancel,
-}: {
-  book: Book;
-  onChange: React.ChangeEventHandler<HTMLInputElement>;
-  onSubmit: React.FormEventHandler<HTMLFormElement>;
-  onCancel: () => void;
 }) => {
   return (
     <form onSubmit={onSubmit}>

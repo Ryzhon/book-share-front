@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
+import Image from "next/image";
 import {
   Container,
   Grid,
@@ -9,10 +10,11 @@ import {
   Button,
   Chip,
 } from "@mui/material";
-import Image from "next/image";
-import { Book } from "@/types/book";
+
 import BookEditForm from "@/components/BookEditForm";
 import { useFlashMessageContext } from "@/contexts/FlashMessageContext";
+
+import { Book } from "@/types/Book";
 
 const BookDetail = () => {
   const router = useRouter();
@@ -23,13 +25,14 @@ const BookDetail = () => {
   const [editMode, setEditMode] = useState(false);
 
   useEffect(() => {
-    const fetchBook = async () => {
-      const response = await fetch(`http://localhost:5000/books/${id}`);
-      const data = await response.json();
-      setBook(data);
-    };
     if (id) {
-      fetchBook();
+      const fetchBook = async () => {
+        const response = await fetch(`http://localhost:5000/books/${id}`);
+        if (!response.ok) throw Error("Failed to fetch book");
+        const data = await response.json();
+        setBook(data);
+      };
+      fetchBook().catch(console.error);
     }
   }, [id]);
 
@@ -66,23 +69,24 @@ const BookDetail = () => {
       console.error("Book is null");
     }
   };
+
   const handleDelete = async () => {
-    if (confirm("本を削除しますか？")) {
-      try {
-        const response = await fetch(`http://localhost:5000/books/${id}`, {
-          method: "DELETE",
-        });
-        if (!response.ok) {
-          throw new Error("Something went wrong with delete");
-        }
-        setFlash({ message: "本の削除が成功しました。", type: "success" });
-        router.push("/books");
-      } catch (error) {
-        console.error("Failed to delete the book:", error);
-        setFlash({ message: "本の削除に失敗しました。", type: "error" });
+    try {
+      const response = await fetch(`http://localhost:5000/books/${id}`, {
+        method: "DELETE",
+      });
+      if (!response.ok) {
+        throw new Error("Something went wrong with delete");
       }
+      setFlash({ message: "本の削除が成功しました。", type: "success" });
+      router.push("/books");
+    } catch (error) {
+      console.error("Failed to delete the book:", error);
+      setFlash({ message: "本の削除に失敗しました。", type: "error" });
     }
   };
+
+  if (!book) return <Typography>本の情報が見つかりません。</Typography>;
 
   return (
     <Container sx={{ mt: 4 }}>

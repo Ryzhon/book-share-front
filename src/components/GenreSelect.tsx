@@ -1,11 +1,6 @@
 import { useState, useEffect } from "react";
 import { Box, Chip } from "@mui/material";
-import { Genre } from "@/types/book";
-
-type GenreSelectProps = {
-  selectedGenre: number | null;
-  setSelectedGenre: (value: number | null) => void;
-};
+import { Genre, GenreSelectProps } from "@/types/Genre";
 
 const GenreSelect: React.FC<GenreSelectProps> = ({
   selectedGenre,

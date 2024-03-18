@@ -1,10 +1,6 @@
 import React from "react";
 import { TextField, Box } from "@mui/material";
-
-interface SearchBoxProps {
-  searchTerm: string;
-  onChange: (newSearchTerm: string) => void;
-}
+import { SearchBoxProps } from "@/types/Search";
 
 const SearchBox: React.FC<SearchBoxProps> = ({ searchTerm, onChange }) => {
   return (
