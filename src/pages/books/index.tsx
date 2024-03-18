@@ -8,6 +8,8 @@ import {
   Box,
   Chip,
 } from "@mui/material";
+import TagSelect from "@/components/TagSelect";
+import GenreSelect from "@/components/GenreSelect";
 import SearchBox from "@/components/SearchBox";
 import Link from "next/link";
 import Image from "next/image";
@@ -16,6 +18,9 @@ import { Book } from "@/types/book";
 const BooksPage = () => {
   const [books, setBooks] = useState<Book[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
+
+  const [selectedGenre, setSelectedGenre] = useState<number | null>(null);
+  const [selectedTags, setSelectedTags] = useState<number[]>([]);
 
   useEffect(() => {
     const fetchBooks = async () => {
@@ -28,9 +33,14 @@ const BooksPage = () => {
 
   const filteredBooks = books.filter(
     (book) =>
-      book.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      book.author.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      book.summary.toLowerCase().includes(searchTerm.toLowerCase()),
+      (selectedGenre === null || book.genre?.id === selectedGenre) &&
+      (selectedTags.length === 0 ||
+        selectedTags.every((tag) =>
+          book.tags?.map((t) => t.id).includes(tag),
+        )) &&
+      (book.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        book.author.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        book.summary.toLowerCase().includes(searchTerm.toLowerCase())),
   );
 
   return (
@@ -39,6 +49,27 @@ const BooksPage = () => {
         searchTerm={searchTerm}
         onChange={(newSearchTerm: string) => setSearchTerm(newSearchTerm)}
       />
+      <Typography variant="subtitle1" sx={{ mb: 2 }}>
+        絞り込む
+      </Typography>
+      <Box sx={{ mb: 3 }}>
+        <Typography variant="subtitle1" sx={{ mb: 2 }}>
+          ジャンル
+        </Typography>
+        <GenreSelect
+          selectedGenre={selectedGenre}
+          setSelectedGenre={setSelectedGenre}
+        />
+      </Box>
+      <Box sx={{ mb: 3 }}>
+        <Typography variant="subtitle1" sx={{ mb: 2 }}>
+          タグ
+        </Typography>
+        <TagSelect
+          selectedTags={selectedTags}
+          setSelectedTags={setSelectedTags}
+        />
+      </Box>
       <Grid container spacing={3}>
         {filteredBooks.map((book) => (
           <Grid item key={book.id} xs={12} sm={6} md={3} lg={3} xl={2}>

@@ -4,7 +4,7 @@ import { Genre } from "@/types/book";
 
 type GenreSelectProps = {
   selectedGenre: number | null;
-  setSelectedGenre: (value: number) => void;
+  setSelectedGenre: (value: number | null) => void;
 };
 
 const GenreSelect: React.FC<GenreSelectProps> = ({
@@ -23,7 +23,11 @@ const GenreSelect: React.FC<GenreSelectProps> = ({
   }, []);
 
   const handleGenreClick = (genreId: number) => {
-    setSelectedGenre(genreId);
+    if (selectedGenre === genreId) {
+      setSelectedGenre(null);
+    } else {
+      setSelectedGenre(genreId);
+    }
   };
 
   return (
