@@ -3,8 +3,11 @@ import { useRouter } from "next/router";
 import { Container, Typography, TextField, Button, Box } from "@mui/material";
 import TagSelect from "@/components/TagSelect";
 import GenreSelect from "@/components/GenreSelect";
+import { useFlashMessageContext } from "@/contexts/FlashMessageContext";
 
 const AddBook = () => {
+  const { setFlash } = useFlashMessageContext();
+
   const router = useRouter();
   const [selectedGenre, setSelectedGenre] = useState<number | null>(null);
   const [selectedTags, setSelectedTags] = useState<number[]>([]);
@@ -38,10 +41,12 @@ const AddBook = () => {
       if (!response.ok) {
         throw new Error("Something went wrong");
       }
+      setFlash({ message: "本の作成が成功しました。", type: "success" });
       router.push("/books");
     } catch (error) {
       console.error("Failed to add book:", error);
-      alert("本の追加に失敗しました");
+      setFlash({ message: "本の作成が失敗しました。", type: "error" });
+      router.push("/books");
     }
   };
 

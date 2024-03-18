@@ -12,19 +12,15 @@ import {
 import Image from "next/image";
 import { Book } from "@/types/book";
 import BookEditForm from "@/components/BookEditForm";
-import FlashMessage from "@/components/FlashMessage";
-import { FlashMessageType } from "@/types/flashMessageType";
+import { useFlashMessageContext } from "@/contexts/FlashMessageContext";
 
 const BookDetail = () => {
   const router = useRouter();
   const { id } = router.query;
+  const { setFlash } = useFlashMessageContext();
 
   const [book, setBook] = useState<Book | null>(null);
   const [editMode, setEditMode] = useState(false);
-  const [flash, setFlash] = useState<FlashMessageType>({
-    message: "",
-    type: "success",
-  });
 
   useEffect(() => {
     const fetchBook = async () => {
@@ -64,15 +60,12 @@ const BookDetail = () => {
         const updatedBook = await response.json();
         setBook(updatedBook);
         setEditMode(false);
-        setFlash({ message: "更新が成功しました。", type: "success" });
       } else {
-        setFlash({ message: "更新に失敗しました。", type: "error" });
       }
     } else {
       console.error("Book is null");
     }
   };
-
   const handleDelete = async () => {
     if (confirm("本を削除しますか？")) {
       try {
@@ -82,19 +75,17 @@ const BookDetail = () => {
         if (!response.ok) {
           throw new Error("Something went wrong with delete");
         }
+        setFlash({ message: "本の削除が成功しました。", type: "success" });
         router.push("/books");
       } catch (error) {
         console.error("Failed to delete the book:", error);
-        alert("本の削除に失敗しました");
+        setFlash({ message: "本の削除に失敗しました。", type: "error" });
       }
     }
   };
 
   return (
     <Container sx={{ mt: 4 }}>
-      {flash.message && (
-        <FlashMessage message={flash.message} type={flash.type} />
-      )}
       {book && (
         <Grid container spacing={4}>
           <Grid item xs={12} md={6}>
