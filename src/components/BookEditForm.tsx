@@ -1,19 +1,21 @@
-import React from 'react';
-import { TextField, Button, Box } from '@mui/material';
-import { Book } from '@/types/book';
+import React from "react";
+import { TextField, Button, Box } from "@mui/material";
+import { Book } from "@/types/book";
 
 const BookEditForm = ({
-    book,
-    onChange,
-    onSubmit,
-  }: {
-    book: Book;
-    onChange: React.ChangeEventHandler<HTMLInputElement>;
-    onSubmit: React.FormEventHandler<HTMLFormElement>;
-  }) => {
+  book,
+  onChange,
+  onSubmit,
+  onCancel,
+}: {
+  book: Book;
+  onChange: React.ChangeEventHandler<HTMLInputElement>;
+  onSubmit: React.FormEventHandler<HTMLFormElement>;
+  onCancel: () => void;
+}) => {
   return (
     <form onSubmit={onSubmit}>
-      <Box sx={{ '& .MuiTextField-root': { mb: 2, width: '100%' } }}>
+      <Box sx={{ "& .MuiTextField-root": { mb: 2, width: "100%" } }}>
         <TextField
           fullWidth
           label="タイトル"
@@ -39,6 +41,14 @@ const BookEditForm = ({
         />
         <Button variant="contained" color="primary" type="submit">
           更新
+        </Button>
+        <Button
+          variant="contained"
+          color="secondary"
+          onClick={onCancel}
+          style={{ marginLeft: "8px" }}
+        >
+          戻る
         </Button>
       </Box>
     </form>

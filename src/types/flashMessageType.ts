@@ -1,6 +1,6 @@
-type AlertType = 'error' | 'warning' | 'info' | 'success';
+type AlertType = "error" | "warning" | "info" | "success";
 
 export type FlashMessageType = {
   message: string;
   type: AlertType;
-}
+};

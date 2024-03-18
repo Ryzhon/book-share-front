@@ -1,5 +1,5 @@
-import React from 'react';
-import { TextField, Box } from '@mui/material';
+import React from "react";
+import { TextField, Box } from "@mui/material";
 
 interface SearchBoxProps {
   searchTerm: string;
