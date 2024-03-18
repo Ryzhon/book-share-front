@@ -73,6 +73,23 @@ const BookDetail = () => {
     }
   };
 
+  const handleDelete = async () => {
+    if (confirm("本を削除しますか？")) {
+      try {
+        const response = await fetch(`http://localhost:5000/books/${id}`, {
+          method: "DELETE",
+        });
+        if (!response.ok) {
+          throw new Error("Something went wrong with delete");
+        }
+        router.push("/books");
+      } catch (error) {
+        console.error("Failed to delete the book:", error);
+        alert("本の削除に失敗しました");
+      }
+    }
+  };
+
   return (
     <Container sx={{ mt: 4 }}>
       {flash.message && (
@@ -155,6 +172,14 @@ const BookDetail = () => {
                     type="button"
                   >
                     編集
+                  </Button>
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    onClick={handleDelete}
+                    style={{ marginLeft: "8px" }}
+                  >
+                    削除
                   </Button>
                 </>
               )}
