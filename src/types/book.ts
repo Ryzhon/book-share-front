@@ -15,6 +15,15 @@ export type Book = {
   tags: Tag[];
 };
 
+export type AddBookFromProps = {
+  title: string;
+  author: string;
+  summary: string;
+  image_url: string;
+  genre_id: number | null;
+  tag_ids: number[];
+};
+
 export type EditBookFormProps = {
   book: Book;
   onChange: React.ChangeEventHandler<HTMLInputElement>;

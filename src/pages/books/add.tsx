@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 
 import { Container, Typography, TextField, Button, Box } from "@mui/material";
@@ -6,6 +6,7 @@ import { Container, Typography, TextField, Button, Box } from "@mui/material";
 import TagSelect from "@/components/TagSelect";
 import GenreSelect from "@/components/GenreSelect";
 import { useFlashMessageContext } from "@/contexts/FlashMessageContext";
+import { AddBookFromProps } from "@/types/Book";
 
 const AddBook = () => {
   const { setFlash } = useFlashMessageContext();
@@ -14,39 +15,41 @@ const AddBook = () => {
   const [selectedGenre, setSelectedGenre] = useState<number | null>(null);
   const [selectedTags, setSelectedTags] = useState<number[]>([]);
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<AddBookFromProps>({
     title: "",
     author: "",
     summary: "",
     image_url: "",
     genre_id: null,
-    tag_ids: [] as number[],
+    tag_ids: [],
   });
+
+  useEffect(() => {
+    setFormData((formData) => ({
+      ...formData,
+      genre_id: selectedGenre,
+      tag_ids: selectedTags,
+    }));
+  }, [selectedGenre, selectedTags]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    if (name !== "genre_id" && name !== "tag_ids") {
-      setFormData({ ...formData, [name]: value });
-    }
+    setFormData({ ...formData, [name]: value });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await fetch("http://localhost:5000/books", {
+      await fetch("http://localhost:5000/books", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
       });
-      if (!response.ok) {
-        throw new Error("Something went wrong");
-      }
       setFlash({ message: "本の作成が成功しました。", type: "success" });
       router.push("/books");
     } catch (error) {
-      console.error("Failed to add book:", error);
       setFlash({ message: "本の作成が失敗しました。", type: "error" });
       router.push("/books");
     }

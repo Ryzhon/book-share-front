@@ -25,14 +25,17 @@ const BookDetail = () => {
   const [editMode, setEditMode] = useState(false);
 
   useEffect(() => {
-    if (id) {
-      const fetchBook = async () => {
+    const fetchBook = async () => {
+      try {
         const response = await fetch(`http://localhost:5000/books/${id}`);
-        if (!response.ok) throw Error("Failed to fetch book");
         const data = await response.json();
         setBook(data);
-      };
-      fetchBook().catch(console.error);
+      } catch (error) {
+        setFlash({ message: "本の取得に失敗しました。", type: "error" });
+      }
+    };
+    if (id) {
+      fetchBook();
     }
   }, [id]);
 
@@ -43,15 +46,15 @@ const BookDetail = () => {
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    if (!book) return <Typography>本の情報が見つかりません。</Typography>;
     e.preventDefault();
 
-    if (book) {
-      const updatedData = {
-        ...book,
-        genre_id: book.genre ? book.genre.id : null,
-        tag_ids: book.tags ? book.tags.map((tag) => tag.id) : [],
-      };
-
+    const updatedData = {
+      ...book,
+      genre_id: book.genre ? book.genre.id : null,
+      tag_ids: book.tags ? book.tags.map((tag) => tag.id) : [],
+    };
+    try {
       const response = await fetch(`http://localhost:5000/books/${id}`, {
         method: "PUT",
         headers: {
@@ -59,34 +62,26 @@ const BookDetail = () => {
         },
         body: JSON.stringify(updatedData),
       });
-      if (response.ok) {
-        const updatedBook = await response.json();
-        setBook(updatedBook);
-        setEditMode(false);
-      } else {
-      }
-    } else {
-      console.error("Book is null");
+      const updatedBook = await response.json();
+      setBook(updatedBook);
+      setEditMode(false);
+      setFlash({ message: "本の更新に成功しました。", type: "success" });
+    } catch (error) {
+      setFlash({ message: "本の更新に失敗しました。", type: "error" });
     }
   };
 
   const handleDelete = async () => {
     try {
-      const response = await fetch(`http://localhost:5000/books/${id}`, {
+      await fetch(`http://localhost:5000/books/${id}`, {
         method: "DELETE",
       });
-      if (!response.ok) {
-        throw new Error("Something went wrong with delete");
-      }
       setFlash({ message: "本の削除が成功しました。", type: "success" });
       router.push("/books");
     } catch (error) {
-      console.error("Failed to delete the book:", error);
       setFlash({ message: "本の削除に失敗しました。", type: "error" });
     }
   };
-
-  if (!book) return <Typography>本の情報が見つかりません。</Typography>;
 
   return (
     <Container sx={{ mt: 4 }}>
