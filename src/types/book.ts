@@ -13,6 +13,7 @@ export type Book = {
   image_url: string;
   genre: Genre;
   tags: Tag[];
+  created_at?: string;
 };
 
 export type AddBookFromProps = {

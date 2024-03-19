@@ -3,9 +3,7 @@ export type SearchBoxProps = {
   onChange: (newSearchTerm: string) => void;
 };
 
-export type SearchAndFilterProps = {
-  searchTerm: string;
-  setSearchTerm: (newSearchTerm: string) => void;
+export type TagAndGenreFilterProps = {
   selectedGenre: number | null;
   setSelectedGenre: (selectedGenre: number | null) => void;
   selectedTags: number[];

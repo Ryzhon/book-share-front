@@ -155,7 +155,9 @@ const BookDetail = () => {
                       />
                     ))}
                   </Box>
-                  <Typography variant="body1">{book.summary}</Typography>
+                  <Typography variant="body1" sx={{ mb: 2 }}>
+                    {book.summary}
+                  </Typography>
                   <Button
                     variant="outlined"
                     onClick={() => setEditMode(true)}
