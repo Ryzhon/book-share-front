@@ -102,7 +102,17 @@ const BooksPage = () => {
                       />
                     ))}
                   </Box>
-                  <Typography variant="body2" mt={1}>
+                  <Typography
+                    variant="body2"
+                    mt={1}
+                    sx={{
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      display: "-webkit-box",
+                      WebkitLineClamp: 3,
+                      WebkitBoxOrient: "vertical",
+                    }}
+                  >
                     {book.summary}
                   </Typography>
                 </CardContent>

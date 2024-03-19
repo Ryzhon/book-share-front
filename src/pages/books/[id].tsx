@@ -37,7 +37,7 @@ const BookDetail = () => {
     if (id) {
       fetchBook();
     }
-  }, [id]);
+  }, [id, setFlash]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!book) return;

@@ -1,0 +1,27 @@
+.flash-message {
+  animation:
+    slideDown 0.5s,
+    fadeOut 0.5s 4.5s;
+  position: relative;
+  opacity: 1;
+}
+
+@keyframes slideDown {
+  from {
+    top: -50px;
+    opacity: 0;
+  }
+  to {
+    top: 0;
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}

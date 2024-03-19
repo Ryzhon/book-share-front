@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
+import { fetchBookInfo } from "@/services/googleBooksService";
 
 import { Container, Typography, TextField, Button, Box } from "@mui/material";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 
 import TagSelect from "@/components/TagSelect";
 import GenreSelect from "@/components/GenreSelect";
@@ -16,6 +18,7 @@ const AddBook = () => {
   const [selectedTags, setSelectedTags] = useState<number[]>([]);
 
   const [formData, setFormData] = useState<AddBookFromProps>({
+    isbn: "",
     title: "",
     author: "",
     summary: "",
@@ -31,6 +34,12 @@ const AddBook = () => {
       tag_ids: selectedTags,
     }));
   }, [selectedGenre, selectedTags]);
+
+  useEffect(() => {
+    fetchBookInfo(formData.isbn, (newData: Partial<AddBookFromProps>) =>
+      setFormData((oldData) => ({ ...oldData, ...newData })),
+    );
+  }, [formData.isbn]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -61,7 +70,20 @@ const AddBook = () => {
         新しい本を追加
       </Typography>
       <form onSubmit={handleSubmit}>
-        <Box sx={{ "& .MuiTextField-root": { mb: 2, width: "100%" } }}>
+        <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+          <InfoOutlinedIcon sx={{ mr: 1 }} />
+          <Typography variant="body2" color="textSecondary">
+            ISBNを入力すると、タイトル、著者、概要、写真が自動的に入力されます。
+          </Typography>
+        </Box>
+        <Box sx={{ ".MuiTextField-root": { mb: 2, width: "100%" } }}>
+          <TextField
+            label="isbn"
+            name="isbn"
+            variant="outlined"
+            value={formData.isbn}
+            onChange={handleChange}
+          />
           <TextField
             label="タイトル"
             name="title"

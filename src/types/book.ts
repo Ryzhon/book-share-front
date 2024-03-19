@@ -16,6 +16,7 @@ export type Book = {
 };
 
 export type AddBookFromProps = {
+  isbn: string;
   title: string;
   author: string;
   summary: string;

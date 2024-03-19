@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
 import { Alert, Box } from "@mui/material";
 import {
   FlashMessageType,
@@ -23,11 +23,20 @@ export const FlashMessageProvider: React.FC<FlashMessageProviderProps> = ({
     message: "",
     type: "info",
   });
+  const [showMessage, setShowMessage] = useState(false);
+  useEffect(() => {
+    if (flash.message) {
+      setShowMessage(true);
+      setTimeout(() => {
+        setShowMessage(false);
+      }, 5000);
+    }
+  }, [flash.message]);
 
   return (
     <>
-      {flash.message && (
-        <Box my={2}>
+      {showMessage && (
+        <Box my={2} className="flash-message">
           <Alert severity={flash.type}>{flash.message}</Alert>
         </Box>
       )}

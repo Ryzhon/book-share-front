@@ -1,4 +1,5 @@
 import "@/styles/globals.css";
+import "@/styles/FlashMessage.css";
 import type { AppProps } from "next/app";
 import Header from "../components/Header";
 import { FlashMessageProvider } from "@/contexts/FlashMessageContext";
