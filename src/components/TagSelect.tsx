@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Box, Chip } from "@mui/material";
 import { Tag, TagSelectProps } from "@/types/Tag";
+import { fetchTagsJson } from "@/services/bookService";
 
 const TagSelect: React.FC<TagSelectProps> = ({
   selectedTags,
@@ -10,13 +11,14 @@ const TagSelect: React.FC<TagSelectProps> = ({
 
   useEffect(() => {
     const fetchTags = async () => {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/tags`,
-      );
-      const data = await response.json();
-      setTags(data);
+      const tags = await fetchTagsJson();
+      setTags(tags);
     };
-    fetchTags();
+    try {
+      fetchTags();
+    } catch (err) {
+      console.log(err);
+    }
   }, []);
 
   const handleTagClick = (tagId: number) => {

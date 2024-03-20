@@ -5,30 +5,23 @@ import { Container, Typography, Paper, Box, Grid } from "@mui/material";
 
 import { Book } from "@/types/Book";
 
+import { fetchGoogleBookDetails } from "@/services/googleBooksService";
+
 const BookDetailPage = () => {
-  const [book, setBook] = useState<Book>();
+  const [book, setBook] = useState<Book | null>();
   const router = useRouter();
   const { isbn } = router.query;
 
   useEffect(() => {
-    if (!isbn) return;
-    const fetchBookDetails = async () => {
-      const response = await fetch(
-        `https://www.googleapis.com/books/v1/volumes?q=isbn:${isbn}`,
-      );
-      const data = await response.json();
-      if (data.items && data.items.length > 0) {
-        const bookInfo = data.items[0].volumeInfo;
-        setBook({
-          id: bookInfo.id,
-          title: bookInfo.title || "",
-          author: bookInfo.authors ? bookInfo.authors.join(", ") : "",
-          summary: bookInfo.description || "",
-          image_url: bookInfo.imageLinks ? bookInfo.imageLinks.thumbnail : "",
-        });
-      }
+    const fetchBook = async () => {
+      const book = await fetchGoogleBookDetails(isbn as string);
+      setBook(book);
     };
-    fetchBookDetails();
+    try {
+      fetchBook();
+    } catch (error) {
+      console.log(error);
+    }
   }, [isbn]);
   if (isbn == "noIsbn")
     return <Typography>詳細を取得することができませんでした。</Typography>;

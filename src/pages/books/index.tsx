@@ -9,6 +9,8 @@ import BookCard from "@/components/BookCard";
 
 import { Book } from "@/types/Book";
 
+import { fetchBooksJson } from "@/services/bookService";
+
 const BooksPage = () => {
   const [books, setBooks] = useState<Book[]>([]);
 
@@ -21,13 +23,14 @@ const BooksPage = () => {
 
   useEffect(() => {
     const fetchBooks = async () => {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/books`,
-      );
-      const data = await response.json();
-      setBooks(data);
+      const books = await fetchBooksJson();
+      setBooks(books);
     };
-    fetchBooks();
+    try {
+      fetchBooks();
+    } catch (err) {
+      console.log(err);
+    }
   }, []);
 
   const sortBooks = (books: Book[]) => {

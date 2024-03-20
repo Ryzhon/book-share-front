@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { Container, Grid, Link } from "@mui/material";
 import BookCard from "@/components/BookCard";
-import { fetchBooksByQuery } from "@/services/googleBooksService";
+import { fetchGoogleBooksByQuery } from "@/services/googleBooksService";
 
 import { Book } from "@/types/Book";
 
@@ -13,7 +13,7 @@ const SearchResultsPage = () => {
 
   useEffect(() => {
     if (query) {
-      fetchBooksByQuery(query as string, setBooks);
+      fetchGoogleBooksByQuery(query as string, setBooks);
     }
   }, [query]);
 

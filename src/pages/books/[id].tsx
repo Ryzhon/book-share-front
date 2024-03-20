@@ -16,6 +16,7 @@ import { useFlashMessageContext } from "@/contexts/FlashMessageContext";
 
 import { Book } from "@/types/Book";
 
+import { fetchBookJson } from "@/services/bookService";
 const BookDetail = () => {
   const router = useRouter();
   const { id } = router.query;
@@ -26,18 +27,13 @@ const BookDetail = () => {
 
   useEffect(() => {
     const fetchBook = async () => {
-      try {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_ENDPOINT}/books/${id}`,
-        );
-        const data = await response.json();
-        setBook(data);
-      } catch (error) {
-        setFlash({ message: "本の取得に失敗しました。", type: "error" });
-      }
+      const book = await fetchBookJson(id as string);
+      setBook(book);
     };
-    if (id) {
+    try {
       fetchBook();
+    } catch {
+      setFlash({ message: "本の取得に失敗しました。", type: "error" });
     }
   }, [id, setFlash]);
 

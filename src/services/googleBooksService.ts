@@ -3,7 +3,7 @@ import { BooksApiResponse } from "@/types/GoogleBook";
 
 import { Book } from "@/types/Book";
 
-export async function fetchBookByISBN(
+export async function fetchGoogleBookByISBN(
   isbn: string,
   updateFormData: (data: Partial<AddBookFromProps>) => void,
 ): Promise<void> {
@@ -28,7 +28,7 @@ export async function fetchBookByISBN(
   }
 }
 
-export async function fetchBooksByQuery(
+export async function fetchGoogleBooksByQuery(
   query: string,
   setBooks: React.Dispatch<React.SetStateAction<Book[]>>,
 ) {
@@ -64,3 +64,26 @@ export async function fetchBooksByQuery(
     setBooks([]);
   }
 }
+
+export const fetchGoogleBookDetails = async (
+  isbn: string,
+): Promise<Book | null> => {
+  const response = await fetch(
+    `https://www.googleapis.com/books/v1/volumes?q=isbn:${isbn}`,
+  );
+  if (!response.ok) {
+    throw new Error("Network response was not ok");
+  }
+  const data = await response.json();
+  if (data.items && data.items.length > 0) {
+    const bookInfo = data.items[0].volumeInfo;
+    return {
+      id: data.items[0].id,
+      title: bookInfo.title || "",
+      author: bookInfo.authors ? bookInfo.authors.join(", ") : "",
+      summary: bookInfo.description || "",
+      image_url: bookInfo.imageLinks ? bookInfo.imageLinks.thumbnail : "",
+    };
+  }
+  return null;
+};

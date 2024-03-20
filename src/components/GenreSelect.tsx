@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Box, Chip } from "@mui/material";
 import { Genre, GenreSelectProps } from "@/types/Genre";
+import { fetchGenresJson } from "@/services/bookService";
 
 const GenreSelect: React.FC<GenreSelectProps> = ({
   selectedGenre,
@@ -10,11 +11,14 @@ const GenreSelect: React.FC<GenreSelectProps> = ({
 
   useEffect(() => {
     const fetchGenres = async () => {
-      const response = await fetch("http://localhost:5000/genres");
-      const data = await response.json();
-      setGenres(data);
+      const genres = await fetchGenresJson();
+      setGenres(genres);
     };
-    fetchGenres();
+    try {
+      fetchGenres();
+    } catch (err) {
+      console.log(err);
+    }
   }, []);
 
   const handleGenreClick = (genreId: number) => {
