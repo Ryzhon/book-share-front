@@ -10,7 +10,9 @@ const TagSelect: React.FC<TagSelectProps> = ({
 
   useEffect(() => {
     const fetchTags = async () => {
-      const response = await fetch("http://localhost:5000/tags");
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/tags`,
+      );
       const data = await response.json();
       setTags(data);
     };

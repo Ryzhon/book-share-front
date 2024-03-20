@@ -27,7 +27,9 @@ const BookDetail = () => {
   useEffect(() => {
     const fetchBook = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/books/${id}`);
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_ENDPOINT}/books/${id}`,
+        );
         const data = await response.json();
         setBook(data);
       } catch (error) {
@@ -55,13 +57,16 @@ const BookDetail = () => {
       tag_ids: book.tags ? book.tags.map((tag) => tag.id) : [],
     };
     try {
-      const response = await fetch(`http://localhost:5000/books/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/books/${id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(updatedData),
         },
-        body: JSON.stringify(updatedData),
-      });
+      );
       const updatedBook = await response.json();
       setBook(updatedBook);
       setEditMode(false);
@@ -73,7 +78,7 @@ const BookDetail = () => {
 
   const handleDelete = async () => {
     try {
-      await fetch(`http://localhost:5000/books/${id}`, {
+      await fetch(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/books/${id}`, {
         method: "DELETE",
       });
       setFlash({ message: "本の削除が成功しました。", type: "success" });

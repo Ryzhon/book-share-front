@@ -21,7 +21,9 @@ const BooksPage = () => {
 
   useEffect(() => {
     const fetchBooks = async () => {
-      const response = await fetch("http://localhost:5000/books");
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/books`,
+      );
       const data = await response.json();
       setBooks(data);
     };
