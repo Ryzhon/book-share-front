@@ -7,12 +7,12 @@ export type Book = {
   title: string;
   author: string;
   summary: string;
-  genre_id: number;
-  status: string;
-  isbn: string;
-  image_url: string;
-  genre: Genre;
-  tags: Tag[];
+  genre_id?: number;
+  status?: string;
+  isbn?: string;
+  image_url?: string;
+  genre?: Genre;
+  tags?: Tag[];
   created_at?: string;
 };
 

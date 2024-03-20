@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import { fetchBookInfo } from "@/services/googleBooksService";
+import { fetchBookByISBN } from "@/services/googleBooksService";
 
 import { Container, Typography, TextField, Button, Box } from "@mui/material";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
@@ -36,7 +36,7 @@ const AddBook = () => {
   }, [selectedGenre, selectedTags]);
 
   useEffect(() => {
-    fetchBookInfo(formData.isbn, (newData: Partial<AddBookFromProps>) =>
+    fetchBookByISBN(formData.isbn, (newData: Partial<AddBookFromProps>) =>
       setFormData((oldData) => ({ ...oldData, ...newData })),
     );
   }, [formData.isbn]);

@@ -1,6 +1,9 @@
 import { AddBookFromProps } from "@/types/Book";
+import { BooksApiResponse } from "@/types/GoogleBook";
 
-export async function fetchBookInfo(
+import { Book } from "@/types/Book";
+
+export async function fetchBookByISBN(
   isbn: string,
   updateFormData: (data: Partial<AddBookFromProps>) => void,
 ): Promise<void> {
@@ -22,5 +25,42 @@ export async function fetchBookInfo(
     } catch (error) {
       console.error("Error fetching book info:", error);
     }
+  }
+}
+
+export async function fetchBooksByQuery(
+  query: string,
+  setBooks: React.Dispatch<React.SetStateAction<Book[]>>,
+) {
+  if (!query) return;
+  const endpoint = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}&maxResults=5`;
+  try {
+    const response = await fetch(endpoint);
+    const data: BooksApiResponse = await response.json();
+    const booksData = data.items
+      ? data.items.map((item) => {
+          const { volumeInfo } = item;
+          const isbnInfo = volumeInfo.industryIdentifiers?.find((identifier) =>
+            identifier?.type?.includes("ISBN"),
+          );
+          const isbn = isbnInfo?.identifier || "";
+          return {
+            id: item.id,
+            title: volumeInfo.title,
+            author: volumeInfo.authors
+              ? volumeInfo.authors.join(", ")
+              : "不明な著者",
+            summary: volumeInfo.description || "説明がありません",
+            image_url: volumeInfo.imageLinks
+              ? volumeInfo.imageLinks.thumbnail
+              : "",
+            isbn,
+          };
+        })
+      : [];
+    setBooks(booksData);
+  } catch (error) {
+    console.error("Error fetching books:", error);
+    setBooks([]);
   }
 }

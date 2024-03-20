@@ -10,7 +10,7 @@ import Link from "next/link";
 
 const Header = () => {
   return (
-    <AppBar position="static">
+    <AppBar position="static" sx={{ marginBottom: 2 }}>
       <Toolbar>
         <Link href="/books" passHref>
           <Typography

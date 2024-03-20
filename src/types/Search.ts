@@ -1,4 +1,4 @@
-export type SearchBoxProps = {
+export type CompanyBooksSearchBoxProps = {
   searchTerm: string;
   onChange: (newSearchTerm: string) => void;
 };
