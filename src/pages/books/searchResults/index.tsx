@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import { Container, Grid, Link, Typography } from "@mui/material";
+import { Container, Grid, Link } from "@mui/material";
 import BookCard from "@/components/BookCard";
 import { fetchBooksByQuery } from "@/services/googleBooksService";
 
