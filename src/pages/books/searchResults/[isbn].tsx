@@ -17,13 +17,16 @@ const BookDetailPage = () => {
       const book = await fetchGoogleBookDetails(isbn as string);
       setBook(book);
     };
+    if (!isbn) {
+      return;
+    }
     try {
       fetchBook();
     } catch (error) {
       console.log(error);
     }
   }, [isbn]);
-  if (isbn == "noIsbn")
+  if (isbn === "noIsbn")
     return <Typography>詳細を取得することができませんでした。</Typography>;
 
   return (
