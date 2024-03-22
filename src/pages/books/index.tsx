@@ -32,6 +32,7 @@ const BooksPage = () => {
       console.log(err);
     }
   }, []);
+  console.log(process.env.NEXT_PUBLIC_API_ENDPOINT)
 
   const sortBooks = (books: Book[]) => {
     return books.sort((book1, book2) => {
