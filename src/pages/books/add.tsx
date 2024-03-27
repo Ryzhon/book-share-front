@@ -36,9 +36,16 @@ const AddBook = () => {
   }, [selectedGenre, selectedTags]);
 
   useEffect(() => {
-    fetchGoogleBookByISBN(formData.isbn, (newData: Partial<AddBookFromProps>) =>
-      setFormData((oldData) => ({ ...oldData, ...newData })),
-    );
+    const fetchAndSetBookData = async () => {
+      const newData = await fetchGoogleBookByISBN(formData.isbn);
+      if (newData) {
+        setFormData((oldData) => ({ ...oldData, ...newData }));
+      }
+    };
+
+    if (formData.isbn.length === 10 || formData.isbn.length === 13) {
+      fetchAndSetBookData();
+    }
   }, [formData.isbn]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

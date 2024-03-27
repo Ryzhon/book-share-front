@@ -3,29 +3,32 @@ import { BooksApiResponse } from "@/types/GoogleBook";
 
 import { Book } from "@/types/Book";
 
+async function fetchBookDataByISBNFromGoogleBooks(
+  isbn: string,
+): Promise<BooksApiResponse> {
+  const response = await fetch(
+    `https://www.googleapis.com/books/v1/volumes?q=isbn:${isbn}`,
+  );
+  if (!response.ok) {
+    throw new Error("Network response was not ok");
+  }
+  return await response.json();
+}
+
 export async function fetchGoogleBookByISBN(
   isbn: string,
-  updateFormData: (data: Partial<AddBookFromProps>) => void,
-): Promise<void> {
-  if (isbn.length === 10 || isbn.length === 13) {
-    try {
-      const response = await fetch(
-        `https://www.googleapis.com/books/v1/volumes?q=isbn:${isbn}`,
-      );
-      const data = await response.json();
-      if (data.items && data.items.length > 0) {
-        const bookInfo = data.items[0].volumeInfo;
-        updateFormData({
-          title: bookInfo.title || "",
-          author: bookInfo.authors ? bookInfo.authors.join(", ") : "",
-          summary: bookInfo.description || "",
-          image_url: bookInfo.imageLinks ? bookInfo.imageLinks.thumbnail : "",
-        });
-      }
-    } catch (error) {
-      console.error("Error fetching book info:", error);
-    }
+): Promise<Partial<AddBookFromProps> | null> {
+  const data = await fetchBookDataByISBNFromGoogleBooks(isbn);
+  if (data && data.items && data.items.length > 0) {
+    const bookInfo = data.items[0].volumeInfo;
+    return {
+      title: bookInfo.title || "",
+      author: bookInfo.authors ? bookInfo.authors.join(", ") : "",
+      summary: bookInfo.description || "",
+      image_url: bookInfo.imageLinks ? bookInfo.imageLinks.thumbnail : "",
+    };
   }
+  return null;
 }
 
 export async function fetchGoogleBooksByQuery(
@@ -68,13 +71,7 @@ export async function fetchGoogleBooksByQuery(
 export const fetchGoogleBookDetails = async (
   isbn: string,
 ): Promise<Book | null> => {
-  const response = await fetch(
-    `https://www.googleapis.com/books/v1/volumes?q=isbn:${isbn}`,
-  );
-  if (!response.ok) {
-    throw new Error("Network response was not ok");
-  }
-  const data = await response.json();
+  const data = await fetchBookDataByISBNFromGoogleBooks(isbn);
   if (data.items && data.items.length > 0) {
     const bookInfo = data.items[0].volumeInfo;
     return {
