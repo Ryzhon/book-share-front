@@ -22,6 +22,7 @@ export async function fetchGoogleBookByISBN(
   if (data && data.items && data.items.length > 0) {
     const bookInfo = data.items[0].volumeInfo;
     return {
+      isbn: isbn,
       title: bookInfo.title || "",
       author: bookInfo.authors ? bookInfo.authors.join(", ") : "",
       summary: bookInfo.description || "",
@@ -76,6 +77,7 @@ export const fetchGoogleBookDetails = async (
     const bookInfo = data.items[0].volumeInfo;
     return {
       id: data.items[0].id,
+      isbn: isbn,
       title: bookInfo.title || "",
       author: bookInfo.authors ? bookInfo.authors.join(", ") : "",
       summary: bookInfo.description || "",

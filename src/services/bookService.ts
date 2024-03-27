@@ -11,11 +11,7 @@ async function fetchAPIJson<T>(path: string): Promise<T> {
     method: "GET",
     headers: headers,
   });
-
-  if (!response.ok) {
-    throw new Error("Network response was not ok");
-  }
-  return await response.json();
+  return response.json();
 }
 
 export const fetchGenresJson = (): Promise<Genre[]> =>

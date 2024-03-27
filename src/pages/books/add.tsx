@@ -58,7 +58,7 @@ const AddBook = () => {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    const headers = createAuthHeaders()
+    const headers = createAuthHeaders();
     e.preventDefault();
     try {
       await fetch(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/books`, {

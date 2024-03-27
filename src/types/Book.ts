@@ -9,7 +9,7 @@ export type Book = {
   summary: string;
   genre_id?: number | null;
   status?: string | null;
-  isbn?: string | null;
+  isbn: string | null;
   image_url?: string | null;
   genre?: Genre | null;
   tags?: Tag[] | null;

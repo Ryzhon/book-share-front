@@ -8,6 +8,7 @@ import AddBookForm from "@/components/AddBookForm";
 import { Book, AddBookFormProps } from "@/types/Book";
 import { fetchGoogleBookByISBN } from "@/services/googleBooksService";
 import createAuthHeaders from "@/utils/authHeaders";
+import { fetchBookJson } from "@/services/bookService";
 
 const BookDetailPage = () => {
   const [book, setBook] = useState<Book | null>(null);
@@ -18,9 +19,15 @@ const BookDetailPage = () => {
   useEffect(() => {
     if (!isbn) return;
     const fetchAndSetBookData = async () => {
-      const newData = await fetchGoogleBookByISBN(isbn as string);
-      if (newData) {
-        setBook(newData);
+      const response = await fetchBookJson(isbn as string);
+      console.log(response);
+      if ("error" in response) {
+        const newData = await fetchGoogleBookByISBN(isbn as string);
+        if (newData) {
+          setBook({ ...newData, status: "貸出可能", isbn: isbn as string });
+        }
+      } else {
+        router.push(`/books/${isbn}`);
       }
     };
     fetchAndSetBookData();

@@ -92,7 +92,7 @@ const BooksPage = () => {
       <Grid container spacing={3}>
         {filteredBooks.map((book) => (
           <Grid item key={book.id} xs={12} sm={6} md={3} lg={3} xl={2}>
-            <Link href={`/books/${book.id}`} passHref>
+            <Link href={`/books/${book.isbn}`} passHref>
               <BookCard book={book} />
             </Link>
           </Grid>

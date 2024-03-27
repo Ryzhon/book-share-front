@@ -21,16 +21,16 @@ import createAuthHeaders from "@/utils/authHeaders";
 
 const BookDetail = () => {
   const router = useRouter();
-  const { id } = router.query;
+  const { isbn } = router.query;
   const { setFlash } = useFlashMessageContext();
 
   const [book, setBook] = useState<Book | null>(null);
   const [editMode, setEditMode] = useState(false);
 
   useEffect(() => {
-    if(!id)return;
+    if (!isbn) return;
     const fetchBook = async () => {
-      const book = await fetchBookJson(id as string);
+      const book = await fetchBookJson(isbn as string);
       setBook(book);
     };
     try {
@@ -38,7 +38,7 @@ const BookDetail = () => {
     } catch {
       setFlash({ message: "本の取得に失敗しました。", type: "error" });
     }
-  }, [id, setFlash]);
+  }, [isbn, setFlash]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!book) return;
@@ -57,7 +57,7 @@ const BookDetail = () => {
     };
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/books/${id}`,
+        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/books/${isbn}`,
         {
           method: "PUT",
           headers: {
@@ -78,10 +78,14 @@ const BookDetail = () => {
   const handleDelete = async () => {
     const headers = createAuthHeaders();
     try {
-      await fetch(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/books/${id}`, {
-        method: "DELETE",
-        headers: headers
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/books/${isbn}`,
+        {
+          method: "DELETE",
+          headers: headers,
+        },
+      );
+      console.log(response);
       setFlash({ message: "本の削除が成功しました。", type: "success" });
       router.push("/books");
     } catch (error) {
