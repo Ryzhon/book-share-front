@@ -8,7 +8,7 @@ import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import TagSelect from "@/components/TagSelect";
 import GenreSelect from "@/components/GenreSelect";
 import { useFlashMessageContext } from "@/contexts/FlashMessageContext";
-import { AddBookFromProps } from "@/types/Book";
+import { AddBookFormProps } from "@/types/Book";
 
 const AddBook = () => {
   const { setFlash } = useFlashMessageContext();
@@ -17,11 +17,12 @@ const AddBook = () => {
   const [selectedGenre, setSelectedGenre] = useState<number | null>(null);
   const [selectedTags, setSelectedTags] = useState<number[]>([]);
 
-  const [formData, setFormData] = useState<AddBookFromProps>({
+  const [formData, setFormData] = useState<AddBookFormProps>({
     isbn: "",
     title: "",
     author: "",
     summary: "",
+    status: "貸出可能",
     image_url: "",
     genre_id: null,
     tag_ids: [],
@@ -36,8 +37,9 @@ const AddBook = () => {
   }, [selectedGenre, selectedTags]);
 
   useEffect(() => {
+    if (!formData.isbn) return;
     const fetchAndSetBookData = async () => {
-      const newData = await fetchGoogleBookByISBN(formData.isbn);
+      const newData = await fetchGoogleBookByISBN(formData.isbn as string);
       if (newData) {
         setFormData((oldData) => ({ ...oldData, ...newData }));
       }

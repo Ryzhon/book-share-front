@@ -1,34 +1,62 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import Image from "next/image";
-import { Container, Typography, Paper, Box, Grid } from "@mui/material";
+import { Container, Typography, Paper, Box, Grid, Button } from "@mui/material";
 
-import { Book } from "@/types/Book";
-
-import { fetchGoogleBookDetails } from "@/services/googleBooksService";
+import { Book, AddBookFormProps } from "@/types/Book";
+import { fetchGoogleBookByISBN } from "@/services/googleBooksService";
 
 const BookDetailPage = () => {
-  const [book, setBook] = useState<Book | null>();
+  const [book, setBook] = useState<Book | null>(null);
+  const [isAdded, setIsAdded] = useState(false);
   const router = useRouter();
   const { isbn } = router.query;
 
   useEffect(() => {
-    const fetchBook = async () => {
-      const book = await fetchGoogleBookDetails(isbn as string);
-      setBook(book);
+    if (!isbn) return;
+    const fetchAndSetBookData = async () => {
+      const newData = await fetchGoogleBookByISBN(isbn as string);
+      if (newData) {
+        setBook(newData);
+      }
     };
-    if (!isbn) {
-      return;
-    }
-    try {
-      fetchBook();
-    } catch (error) {
-      console.log(error);
-    }
+    fetchAndSetBookData();
   }, [isbn]);
-  if (isbn === "noIsbn")
-    return <Typography>詳細を取得することができませんでした。</Typography>;
 
+  const addToInternalLibrary = async () => {
+    if (!book) return;
+
+    const bookData: AddBookFormProps = {
+      title: book.title,
+      author: book.author,
+      summary: book.summary,
+      status: "貸出可能",
+      image_url: book.image_url as string,
+      isbn: isbn as string,
+    };
+
+    try {
+      const response = await fetch("http://localhost:5000/books", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ book: bookData }),
+      });
+
+      if (!response.ok) {
+        throw new Error("社内蔵書の追加に失敗しました");
+      }
+
+      setIsAdded(true);
+    } catch (error) {
+      console.error("Error adding book to internal library:", error);
+    }
+  };
+
+  if (isbn === "noIsbn") {
+    return <Typography>詳細を取得することができませんでした。</Typography>;
+  }
   return (
     <Container sx={{ mt: 4 }}>
       {book && (
@@ -70,6 +98,15 @@ const BookDetailPage = () => {
                 <Typography variant="body1" sx={{ mb: 2 }}>
                   {book.summary}
                 </Typography>
+                <Button
+                  color="primary"
+                  variant="contained"
+                  sx={{ mt: 2 }}
+                  onClick={addToInternalLibrary}
+                  disabled={isAdded}
+                >
+                  {isAdded ? "蔵書に追加済み" : "社内蔵書に追加"}
+                </Button>
               </>
             </Paper>
           </Grid>

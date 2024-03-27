@@ -1,4 +1,4 @@
-import { AddBookFromProps } from "@/types/Book";
+import { AddBookFormProps } from "@/types/Book";
 import { BooksApiResponse } from "@/types/GoogleBook";
 
 import { Book } from "@/types/Book";
@@ -17,7 +17,7 @@ async function fetchBookDataByISBNFromGoogleBooks(
 
 export async function fetchGoogleBookByISBN(
   isbn: string,
-): Promise<Partial<AddBookFromProps> | null> {
+): Promise<AddBookFormProps | null> {
   const data = await fetchBookDataByISBNFromGoogleBooks(isbn);
   if (data && data.items && data.items.length > 0) {
     const bookInfo = data.items[0].volumeInfo;
