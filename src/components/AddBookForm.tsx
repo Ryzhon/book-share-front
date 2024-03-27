@@ -28,18 +28,14 @@ const AddBookForm: React.FC<AddBookProps> = ({ book, onSave }) => {
         ジャンル、タグを選択する
       </Typography>
       <Box sx={{ mb: 3 }}>
-        <Typography variant="h6">
-          ジャンル
-        </Typography>
+        <Typography variant="h6">ジャンル</Typography>
         <GenreSelect
           selectedGenre={selectedGenre}
           setSelectedGenre={setSelectedGenre}
         />
       </Box>
       <Box sx={{ mb: 3 }}>
-        <Typography variant="h6">
-          タグ
-        </Typography>
+        <Typography variant="h6">タグ</Typography>
         <TagSelect
           selectedTags={selectedTags}
           setSelectedTags={setSelectedTags}

@@ -7,6 +7,7 @@ import AddBookForm from "@/components/AddBookForm";
 
 import { Book, AddBookFormProps } from "@/types/Book";
 import { fetchGoogleBookByISBN } from "@/services/googleBooksService";
+import createAuthHeaders from "@/utils/authHeaders";
 
 const BookDetailPage = () => {
   const [book, setBook] = useState<Book | null>(null);
@@ -25,12 +26,7 @@ const BookDetailPage = () => {
     fetchAndSetBookData();
   }, [isbn]);
   const onSave = async (bookData: AddBookFormProps) => {
-    const accessToken = localStorage.getItem("access_token");
-    const headers = new Headers();
-    headers.append("Content-Type", "application/json");
-    if (accessToken) {
-      headers.append("ACCESS_TOKEN", accessToken);
-    }
+    const headers = createAuthHeaders();
 
     try {
       const response = await fetch(
