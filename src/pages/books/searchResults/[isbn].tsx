@@ -3,12 +3,14 @@ import { useRouter } from "next/router";
 import Image from "next/image";
 import { Container, Typography, Paper, Box, Grid, Button } from "@mui/material";
 
+import AddBookForm from "@/components/AddBookForm";
+
 import { Book, AddBookFormProps } from "@/types/Book";
 import { fetchGoogleBookByISBN } from "@/services/googleBooksService";
 
 const BookDetailPage = () => {
   const [book, setBook] = useState<Book | null>(null);
-  const [isAdded, setIsAdded] = useState(false);
+  const [addMode, setAddMode] = useState(false);
   const router = useRouter();
   const { isbn } = router.query;
 
@@ -22,33 +24,29 @@ const BookDetailPage = () => {
     };
     fetchAndSetBookData();
   }, [isbn]);
-
-  const addToInternalLibrary = async () => {
-    if (!book) return;
-
-    const bookData: AddBookFormProps = {
-      title: book.title,
-      author: book.author,
-      summary: book.summary,
-      status: "貸出可能",
-      image_url: book.image_url as string,
-      isbn: isbn as string,
-    };
+  const onSave = async (bookData: AddBookFormProps) => {
+    const accessToken = localStorage.getItem("access_token");
+    const headers = new Headers();
+    headers.append("Content-Type", "application/json");
+    if (accessToken) {
+      headers.append("ACCESS_TOKEN", accessToken);
+    }
 
     try {
-      const response = await fetch("http://localhost:5000/books", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/books`,
+        {
+          method: "POST",
+          headers: headers,
+          body: JSON.stringify(bookData),
         },
-        body: JSON.stringify({ book: bookData }),
-      });
+      );
 
       if (!response.ok) {
         throw new Error("社内蔵書の追加に失敗しました");
       }
 
-      setIsAdded(true);
+      router.push("/books");
     } catch (error) {
       console.error("Error adding book to internal library:", error);
     }
@@ -84,30 +82,32 @@ const BookDetailPage = () => {
           </Grid>
           <Grid item xs={12} md={6}>
             <Paper elevation={3} sx={{ padding: "20px" }}>
-              <>
-                <Typography
-                  variant="h5"
-                  component="h2"
-                  sx={{ marginBottom: "20px" }}
-                >
-                  {book.title}
-                </Typography>
-                <Typography variant="subtitle1" sx={{ marginBottom: "20px" }}>
-                  著者: {book.author}
-                </Typography>
-                <Typography variant="body1" sx={{ mb: 2 }}>
-                  {book.summary}
-                </Typography>
-                <Button
-                  color="primary"
-                  variant="contained"
-                  sx={{ mt: 2 }}
-                  onClick={addToInternalLibrary}
-                  disabled={isAdded}
-                >
-                  {isAdded ? "蔵書に追加済み" : "社内蔵書に追加"}
-                </Button>
-              </>
+              {addMode ? (
+                <AddBookForm book={book} onSave={onSave} />
+              ) : (
+                <>
+                  <Typography
+                    variant="h5"
+                    component="h2"
+                    sx={{ marginBottom: "20px" }}
+                  >
+                    {book.title}
+                  </Typography>
+                  <Typography variant="subtitle1" sx={{ marginBottom: "20px" }}>
+                    著者: {book.author}
+                  </Typography>
+                  <Typography variant="body1" sx={{ mb: 2 }}>
+                    {book.summary}
+                  </Typography>
+                  <Button
+                    color="primary"
+                    variant="contained"
+                    onClick={() => setAddMode(true)}
+                  >
+                    社内蔵書に追加
+                  </Button>
+                </>
+              )}
             </Paper>
           </Grid>
         </Grid>
