@@ -10,6 +10,8 @@ import GenreSelect from "@/components/GenreSelect";
 import { useFlashMessageContext } from "@/contexts/FlashMessageContext";
 import { AddBookFormProps } from "@/types/Book";
 
+import createAuthHeaders from "@/utils/authHeaders";
+
 const AddBook = () => {
   const { setFlash } = useFlashMessageContext();
 
@@ -56,13 +58,12 @@ const AddBook = () => {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
+    const headers = createAuthHeaders()
     e.preventDefault();
     try {
       await fetch(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/books`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: headers,
         body: JSON.stringify(formData),
       });
       setFlash({ message: "本の作成が成功しました。", type: "success" });

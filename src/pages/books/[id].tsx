@@ -17,6 +17,8 @@ import { useFlashMessageContext } from "@/contexts/FlashMessageContext";
 import { Book } from "@/types/Book";
 
 import { fetchBookJson } from "@/services/bookService";
+import createAuthHeaders from "@/utils/authHeaders";
+
 const BookDetail = () => {
   const router = useRouter();
   const { id } = router.query;
@@ -26,6 +28,7 @@ const BookDetail = () => {
   const [editMode, setEditMode] = useState(false);
 
   useEffect(() => {
+    if(!id)return;
     const fetchBook = async () => {
       const book = await fetchBookJson(id as string);
       setBook(book);
@@ -73,9 +76,11 @@ const BookDetail = () => {
   };
 
   const handleDelete = async () => {
+    const headers = createAuthHeaders();
     try {
       await fetch(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/books/${id}`, {
         method: "DELETE",
+        headers: headers
       });
       setFlash({ message: "本の削除が成功しました。", type: "success" });
       router.push("/books");
