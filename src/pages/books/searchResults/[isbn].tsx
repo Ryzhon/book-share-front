@@ -1,34 +1,63 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import Image from "next/image";
-import { Container, Typography, Paper, Box, Grid } from "@mui/material";
+import { Container, Typography, Paper, Box, Grid, Button } from "@mui/material";
 
-import { Book } from "@/types/Book";
+import AddBookForm from "@/components/AddBookForm";
 
-import { fetchGoogleBookDetails } from "@/services/googleBooksService";
+import { Book, AddBookFormProps } from "@/types/Book";
+import { fetchGoogleBookByISBN } from "@/services/googleBooksService";
+import createAuthHeaders from "@/utils/authHeaders";
+import { fetchBookJson } from "@/services/bookService";
 
-const BookDetailPage = () => {
-  const [book, setBook] = useState<Book | null>();
+const SearchResultsDetailPage = () => {
+  const [book, setBook] = useState<Book | null>(null);
+  const [addMode, setAddMode] = useState(false);
   const router = useRouter();
   const { isbn } = router.query;
 
   useEffect(() => {
-    const fetchBook = async () => {
-      const book = await fetchGoogleBookDetails(isbn as string);
-      setBook(book);
+    if (!isbn) return;
+    const fetchAndSetBookData = async () => {
+      const response = await fetchBookJson(isbn as string);
+      console.log(response);
+      if ("error" in response) {
+        const newData = await fetchGoogleBookByISBN(isbn as string);
+        if (newData) {
+          setBook({ ...newData, status: "貸出可能", isbn: isbn as string });
+        }
+      } else {
+        router.push(`/books/${isbn}`);
+      }
     };
-    if (!isbn) {
-      return;
-    }
-    try {
-      fetchBook();
-    } catch (error) {
-      console.log(error);
-    }
-  }, [isbn]);
-  if (isbn === "noIsbn")
-    return <Typography>詳細を取得することができませんでした。</Typography>;
+    fetchAndSetBookData();
+  }, [isbn, router]);
+  const onSave = async (bookData: AddBookFormProps) => {
+    const headers = createAuthHeaders();
 
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/books`,
+        {
+          method: "POST",
+          headers: headers,
+          body: JSON.stringify(bookData),
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error("社内蔵書の追加に失敗しました");
+      }
+
+      router.push("/books");
+    } catch (error) {
+      console.error("Error adding book to internal library:", error);
+    }
+  };
+
+  if (isbn === "noIsbn") {
+    return <Typography>詳細を取得することができませんでした。</Typography>;
+  }
   return (
     <Container sx={{ mt: 4 }}>
       {book && (
@@ -56,21 +85,32 @@ const BookDetailPage = () => {
           </Grid>
           <Grid item xs={12} md={6}>
             <Paper elevation={3} sx={{ padding: "20px" }}>
-              <>
-                <Typography
-                  variant="h5"
-                  component="h2"
-                  sx={{ marginBottom: "20px" }}
-                >
-                  {book.title}
-                </Typography>
-                <Typography variant="subtitle1" sx={{ marginBottom: "20px" }}>
-                  著者: {book.author}
-                </Typography>
-                <Typography variant="body1" sx={{ mb: 2 }}>
-                  {book.summary}
-                </Typography>
-              </>
+              {addMode ? (
+                <AddBookForm book={book} onSave={onSave} />
+              ) : (
+                <>
+                  <Typography
+                    variant="h5"
+                    component="h2"
+                    sx={{ marginBottom: "20px" }}
+                  >
+                    {book.title}
+                  </Typography>
+                  <Typography variant="subtitle1" sx={{ marginBottom: "20px" }}>
+                    著者: {book.author}
+                  </Typography>
+                  <Typography variant="body1" sx={{ mb: 2 }}>
+                    {book.summary}
+                  </Typography>
+                  <Button
+                    color="primary"
+                    variant="contained"
+                    onClick={() => setAddMode(true)}
+                  >
+                    社内蔵書に追加
+                  </Button>
+                </>
+              )}
             </Paper>
           </Grid>
         </Grid>
@@ -79,4 +119,4 @@ const BookDetailPage = () => {
   );
 };
 
-export default BookDetailPage;
+export default SearchResultsDetailPage;

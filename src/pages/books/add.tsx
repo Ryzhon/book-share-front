@@ -8,20 +8,23 @@ import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import TagSelect from "@/components/TagSelect";
 import GenreSelect from "@/components/GenreSelect";
 import { useFlashMessageContext } from "@/contexts/FlashMessageContext";
-import { AddBookFromProps } from "@/types/Book";
+import { AddBookFormProps } from "@/types/Book";
 
-const AddBook = () => {
+import createAuthHeaders from "@/utils/authHeaders";
+
+const AddBookPage = () => {
   const { setFlash } = useFlashMessageContext();
 
   const router = useRouter();
   const [selectedGenre, setSelectedGenre] = useState<number | null>(null);
   const [selectedTags, setSelectedTags] = useState<number[]>([]);
 
-  const [formData, setFormData] = useState<AddBookFromProps>({
+  const [formData, setFormData] = useState<AddBookFormProps>({
     isbn: "",
     title: "",
     author: "",
     summary: "",
+    status: "貸出可能",
     image_url: "",
     genre_id: null,
     tag_ids: [],
@@ -36,9 +39,17 @@ const AddBook = () => {
   }, [selectedGenre, selectedTags]);
 
   useEffect(() => {
-    fetchGoogleBookByISBN(formData.isbn, (newData: Partial<AddBookFromProps>) =>
-      setFormData((oldData) => ({ ...oldData, ...newData })),
-    );
+    if (!formData.isbn) return;
+    const fetchAndSetBookData = async () => {
+      const newData = await fetchGoogleBookByISBN(formData.isbn as string);
+      if (newData) {
+        setFormData((oldData) => ({ ...oldData, ...newData }));
+      }
+    };
+
+    if (formData.isbn.length === 10 || formData.isbn.length === 13) {
+      fetchAndSetBookData();
+    }
   }, [formData.isbn]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -47,13 +58,12 @@ const AddBook = () => {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
+    const headers = createAuthHeaders();
     e.preventDefault();
     try {
       await fetch(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/books`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: headers,
         body: JSON.stringify(formData),
       });
       setFlash({ message: "本の作成が成功しました。", type: "success" });
@@ -141,4 +151,4 @@ const AddBook = () => {
   );
 };
 
-export default AddBook;
+export default AddBookPage;
