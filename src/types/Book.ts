@@ -29,3 +29,12 @@ export type EditBookFormProps = {
   onSubmit: React.FormEventHandler<HTMLFormElement>;
   onCancel: () => void;
 };
+
+export type AddElementFormProps = {
+  elementName: string;
+  setElementName: React.Dispatch<React.SetStateAction<string>>;
+  endpoint: string;
+  elementAdded: () => void;
+  setError: React.Dispatch<React.SetStateAction<string>>;
+  error: string | null;
+};
