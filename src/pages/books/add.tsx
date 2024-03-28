@@ -12,7 +12,7 @@ import { AddBookFormProps } from "@/types/Book";
 
 import createAuthHeaders from "@/utils/authHeaders";
 
-const AddBook = () => {
+const AddBookPage = () => {
   const { setFlash } = useFlashMessageContext();
 
   const router = useRouter();
@@ -151,4 +151,4 @@ const AddBook = () => {
   );
 };
 
-export default AddBook;
+export default AddBookPage;

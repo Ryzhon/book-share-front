@@ -19,7 +19,7 @@ import { AddBookFormProps } from "@/types/Book";
 import { fetchBookJson } from "@/services/bookService";
 import createAuthHeaders from "@/utils/authHeaders";
 
-const BookDetail = () => {
+const BookDetailPage = () => {
   const router = useRouter();
   const { isbn } = router.query;
   const { setFlash } = useFlashMessageContext();
@@ -211,4 +211,4 @@ const BookDetail = () => {
   );
 };
 
-export default BookDetail;
+export default BookDetailPage;

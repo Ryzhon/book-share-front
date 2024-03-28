@@ -10,7 +10,7 @@ import { fetchGoogleBookByISBN } from "@/services/googleBooksService";
 import createAuthHeaders from "@/utils/authHeaders";
 import { fetchBookJson } from "@/services/bookService";
 
-const BookDetailPage = () => {
+const SearchResultsDetailPage = () => {
   const [book, setBook] = useState<Book | null>(null);
   const [addMode, setAddMode] = useState(false);
   const router = useRouter();
@@ -119,4 +119,4 @@ const BookDetailPage = () => {
   );
 };
 
-export default BookDetailPage;
+export default SearchResultsDetailPage;
