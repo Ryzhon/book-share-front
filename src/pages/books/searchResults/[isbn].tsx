@@ -31,7 +31,7 @@ const BookDetailPage = () => {
       }
     };
     fetchAndSetBookData();
-  }, [isbn]);
+  }, [isbn, router]);
   const onSave = async (bookData: AddBookFormProps) => {
     const headers = createAuthHeaders();
 

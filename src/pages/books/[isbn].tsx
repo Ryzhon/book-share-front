@@ -14,7 +14,7 @@ import {
 import BookEditForm from "@/components/BookEditForm";
 import { useFlashMessageContext } from "@/contexts/FlashMessageContext";
 
-import { Book } from "@/types/Book";
+import { AddBookFormProps } from "@/types/Book";
 
 import { fetchBookJson } from "@/services/bookService";
 import createAuthHeaders from "@/utils/authHeaders";
@@ -24,14 +24,26 @@ const BookDetail = () => {
   const { isbn } = router.query;
   const { setFlash } = useFlashMessageContext();
 
-  const [book, setBook] = useState<Book | null>(null);
+  const [formData, setFormData] = useState<AddBookFormProps>({
+    isbn: "",
+    title: "",
+    author: "",
+    summary: "",
+    status: "貸出可能",
+    image_url: "",
+    genre_id: null,
+    tag_ids: [],
+  });
   const [editMode, setEditMode] = useState(false);
+
+  const [selectedGenre, setSelectedGenre] = useState<number | null>(null);
+  const [selectedTags, setSelectedTags] = useState<number[]>([]);
 
   useEffect(() => {
     if (!isbn) return;
     const fetchBook = async () => {
       const book = await fetchBookJson(isbn as string);
-      setBook(book);
+      setFormData(book);
     };
     try {
       fetchBook();
@@ -40,34 +52,40 @@ const BookDetail = () => {
     }
   }, [isbn, setFlash]);
 
+  useEffect(() => {
+    setFormData((formData) => ({
+      ...formData,
+      genre_id: selectedGenre,
+      tag_ids: selectedTags,
+    }));
+  }, [selectedGenre, selectedTags]);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!book) return;
+    if (!formData) return;
     const { name, value } = e.target;
-    setBook({ ...book, [name]: value });
+    setFormData({ ...formData, [name]: value });
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    if (!book) return <Typography>本の情報が見つかりません。</Typography>;
+    if (!formData) return <Typography>本の情報が見つかりません。</Typography>;
     e.preventDefault();
 
     const updatedData = {
-      ...book,
-      genre_id: book.genre ? book.genre.id : null,
-      tag_ids: book.tags ? book.tags.map((tag) => tag.id) : [],
+      ...formData,
+      genre_id: formData.genre_id,
+      tag_ids: formData.tag_ids,
     };
     try {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_ENDPOINT}/books/${isbn}`,
         {
           method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: createAuthHeaders(),
           body: JSON.stringify(updatedData),
         },
       );
       const updatedBook = await response.json();
-      setBook(updatedBook);
+      setFormData(updatedBook);
       setEditMode(false);
       setFlash({ message: "本の更新に成功しました。", type: "success" });
     } catch (error) {
@@ -78,14 +96,10 @@ const BookDetail = () => {
   const handleDelete = async () => {
     const headers = createAuthHeaders();
     try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_ENDPOINT}/books/${isbn}`,
-        {
-          method: "DELETE",
-          headers: headers,
-        },
-      );
-      console.log(response);
+      await fetch(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/books/${isbn}`, {
+        method: "DELETE",
+        headers: headers,
+      });
       setFlash({ message: "本の削除が成功しました。", type: "success" });
       router.push("/books");
     } catch (error) {
@@ -95,7 +109,7 @@ const BookDetail = () => {
 
   return (
     <Container sx={{ mt: 4 }}>
-      {book && (
+      {formData && (
         <Grid container spacing={4}>
           <Grid item xs={12} md={6}>
             <Box
@@ -106,10 +120,10 @@ const BookDetail = () => {
                 mx: "auto",
               }}
             >
-              {book.image_url && (
+              {formData.image_url && (
                 <Image
-                  src={book.image_url}
-                  alt={book.title}
+                  src={formData.image_url}
+                  alt={formData.title}
                   layout="responsive"
                   width={200}
                   height={200}
@@ -122,7 +136,11 @@ const BookDetail = () => {
             <Paper elevation={3} sx={{ padding: "20px" }}>
               {editMode ? (
                 <BookEditForm
-                  book={book}
+                  book={formData}
+                  selectedGenre={selectedGenre}
+                  setSelectedGenre={setSelectedGenre}
+                  selectedTags={selectedTags}
+                  setSelectedTags={setSelectedTags}
                   onChange={handleChange}
                   onSubmit={handleSubmit}
                   onCancel={() => setEditMode(false)}
@@ -134,15 +152,15 @@ const BookDetail = () => {
                     component="h2"
                     sx={{ marginBottom: "20px" }}
                   >
-                    {book.title}
+                    {formData.title}
                   </Typography>
                   <Typography variant="subtitle1" sx={{ marginBottom: "20px" }}>
-                    著者: {book.author}
+                    著者: {formData.author}
                   </Typography>
-                  {book.genre && (
+                  {formData.genre && (
                     <Box sx={{ display: "flex", mb: 1.5, gap: 0.5 }}>
                       <Chip
-                        label={book.genre.name}
+                        label={formData.genre.name}
                         variant="outlined"
                         size="small"
                       />
@@ -156,7 +174,7 @@ const BookDetail = () => {
                       mb: 1.5,
                     }}
                   >
-                    {book.tags?.map((tag) => (
+                    {formData.tags?.map((tag) => (
                       <Chip
                         key={tag.id}
                         label={tag.name}
@@ -166,7 +184,7 @@ const BookDetail = () => {
                     ))}
                   </Box>
                   <Typography variant="body1" sx={{ mb: 2 }}>
-                    {book.summary}
+                    {formData.summary}
                   </Typography>
                   <Button
                     variant="outlined"

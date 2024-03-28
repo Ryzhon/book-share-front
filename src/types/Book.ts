@@ -21,6 +21,10 @@ export type AddBookFormProps = Book & {
 
 export type EditBookFormProps = {
   book: Book;
+  selectedGenre: number | null;
+  setSelectedGenre: (value: number | null) => void;
+  selectedTags: number[];
+  setSelectedTags: (value: number[]) => void;
   onChange: React.ChangeEventHandler<HTMLInputElement>;
   onSubmit: React.FormEventHandler<HTMLFormElement>;
   onCancel: () => void;
